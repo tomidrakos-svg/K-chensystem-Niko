@@ -126,12 +126,12 @@ Abholgeschäft dazukommt — nicht jetzt.
 
 Klein, ohne Architektur-Änderung, schärfen Screen 1 Richtung Goldstandard:
 
-- [ ] **HOLD/WARTET-Badge** am geparkten Kurs (statt nur Dimmen)
-- [ ] **Kurs-Fortschritt** „x/y fertig" im Gang-Kopf
-- [ ] **Rot-Zustand** als flächigeren Karten-Tint (nicht nur Rand)
-- [ ] **Light-Mode-Variante** als Option (Küchenhelligkeit)
-- [ ] Gerichtnamen-Schriftgröße auf Distanz gegenchecken
-- [ ] Ampel-Schwellen zusätzlich als **absolute Minuten** konfigurierbar machen
+- [x] **HOLD/WARTET-Badge** am geparkten Kurs (statt nur Dimmen) — umgesetzt
+- [x] **Kurs-Fortschritt** „x/y fertig" im Gang-Kopf — umgesetzt
+- [x] **Rot-Zustand** als flächigeren Karten-Tint (nicht nur Rand) — umgesetzt
+- [x] **Light-Mode-Variante** als Option (Küchenhelligkeit) — umgesetzt (Toggle)
+- [x] Gerichtnamen-Schriftgröße auf Distanz gegenchecken — vergrößert
+- [ ] Ampel-Schwellen zusätzlich als **absolute Minuten** konfigurierbar machen (offen)
 
 > Diese Punkte sind **Verfeinerungen** und ersetzen NICHT das echte
 > `kuechendisplay-mockup.jsx` — sobald das vorliegt, gilt es als verbindlich und
