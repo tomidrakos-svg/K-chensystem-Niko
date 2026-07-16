@@ -5,6 +5,7 @@ __pycache__/
 .pytest_cache/
 backend/kds.db
 backend/kds.db-*
+backend/exports/
 
 # Node / Frontend
 frontend/node_modules/

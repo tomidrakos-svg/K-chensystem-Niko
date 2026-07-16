@@ -1,0 +1,9 @@
+[Unit]
+Description=Kuechendisplay: taeglicher anonymer Lern-Export + Rohdaten-Loeschung
+
+[Service]
+Type=oneshot
+User=pi
+WorkingDirectory=/home/pi/K-chensystem-Niko/backend
+# Optional anderes Export-Ziel: Environment=KDS_EXPORT_DIR=/home/pi/exports
+ExecStart=/home/pi/K-chensystem-Niko/backend/.venv/bin/python taeglich.py

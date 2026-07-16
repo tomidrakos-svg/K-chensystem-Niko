@@ -50,7 +50,29 @@ Danach läuft das Display unter `http://<pi-ip>:8000/`. Prüfen: `curl http://<p
 Mit **Port 9100** (RAW/JetDirect) beginnen. LPD (515) nur, falls die konkrete
 Kasse es nutzt.
 
-## 4. Vor Ort zu klären (Handoff §10)
+## 4. Täglicher Datenschutz-Lauf (11:00 Uhr)
+
+Der Pi ist ein **anonymer Sammler**: täglich um 11:00 werden die gemessenen
+Zubereitungszeiten **anonym** exportiert (nur Gericht → Zeiten, ohne Tisch/Notiz/
+Person, kein Mitarbeiterbezug) und anschließend **alle personenbezogenen Rohdaten
+gelöscht** (Bons, Notizen/Allergien, Ereignis-Log). Siehe `AGENTS.md` §3 und
+`backend/lernexport.py`.
+
+```bash
+sudo cp ~/K-chensystem-Niko/scripts/kiosk/kds-taeglich.service /etc/systemd/system/
+sudo cp ~/K-chensystem-Niko/scripts/kiosk/kds-taeglich.timer   /etc/systemd/system/
+sudo systemctl enable --now kds-taeglich.timer
+systemctl list-timers kds-taeglich.timer      # nächste Ausführung prüfen
+```
+
+Manuell auslösen / testen: `cd backend && .venv/bin/python taeglich.py`.
+Die anonymen Exporte landen in `backend/exports/` (bzw. `KDS_EXPORT_DIR`).
+
+> **Offen (Zustellung):** Wie die anonymen Exporte zu dir gelangen (Download über
+> die LAN-Oberfläche / USB / Mail) ist noch zu entscheiden. Bis dahin liegen sie
+> lokal im Export-Ordner und können von dort abgeholt werden.
+
+## 5. Vor Ort zu klären (Handoff §10)
 
 - Küchendrucker-Anschluss: LAN vs. USB (Foto der Rückseite).
 - Ein echtes Küchenbon-Foto → Parser-Format in `backend/parser.py` eichen und den
