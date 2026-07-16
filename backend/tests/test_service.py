@@ -65,6 +65,21 @@ def test_zurueckholen_reaktiviert(svc):
     assert svc.snapshot()["recall"] == []
 
 
+def test_zurueckholen_oeffnet_items_und_startet_uhr_neu(svc):
+    tid = svc.ingest_bon("TISCH 6  19:00\n1x  1  Gyros\n")
+    it = svc.snapshot()["tickets"][0]["gaenge"][0]["items"][0]
+    svc.item_fertig(it["id"])
+    assert svc.snapshot()["recall"]                      # abgeschlossen -> Ablage
+    svc.zurueckholen(tid)
+    g = _gaenge(svc.snapshot(), tid)["Hauptgang"]
+    assert g["status"] == "laufend"                      # Uhr laeuft neu, nicht 'fertig'
+    assert g["fertig_at"] is None
+    assert g["items"][0]["fertig"] is False              # Item wieder offen
+    # ... und laesst sich erneut abarbeiten -> wieder in die Ablage
+    svc.item_fertig(g["items"][0]["id"])
+    assert svc.snapshot()["recall"][0]["id"] == tid
+
+
 def test_geparktes_item_kann_nicht_fertig_werden(svc):
     tid = svc.ingest_bon("TISCH 5  19:00\n1x  27  Huehnersuppe\n1x  1  Gyros\n")
     g = _gaenge(svc.snapshot(), tid)

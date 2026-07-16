@@ -83,18 +83,26 @@ class KDSService:
         if row is None:
             return
         ticket_id, gang = row["ticket_id"], row["gang"]
+        cutoff = self._cutoff_id(ticket_id)
         # Nur erledigbar, wenn der Gang gestartet ist (geparkte Items sind gesperrt).
         if gang not in self._started_gaenge(ticket_id):
             return
-        if self._item_ist_fertig(item_id):
+        if self._item_ist_fertig(item_id, cutoff):
             return
         db.log_event(self.conn, "item", item_id, "item_fertig", gang=gang)
-        if self._alle_items_fertig(ticket_id):
+        if self._alle_items_fertig(ticket_id, cutoff):
             db.log_event(self.conn, "ticket", ticket_id, "serviert")
 
     def zurueckholen(self, ticket_id: int) -> None:
-        if self._ticket_status(ticket_id) == "serviert":
-            db.log_event(self.conn, "ticket", ticket_id, "zurueckgeholt")
+        if self._ticket_status(ticket_id) != "serviert":
+            return
+        # Voll zurueckholen (Design-Entscheidung): das Ticket wird wie ein frischer
+        # Auftrag reaktiviert. Wir loeschen keine Events (ehrliches Logbuch) —
+        # stattdessen zaehlen ab hier nur Events NACH dem 'zurueckgeholt' (Cutoff).
+        db.log_event(self.conn, "ticket", ticket_id, "zurueckgeholt")
+        # Alle Gaenge frisch starten: Uhr laeuft neu, Items sind wieder offen.
+        for gang in self._gaenge_present(ticket_id):
+            db.log_event(self.conn, "ticket", ticket_id, "gang_gestartet", gang=gang)
 
     # ---------- Projektion ----------
     def snapshot(self) -> dict:
@@ -133,31 +141,43 @@ class KDSService:
             "SELECT DISTINCT gang FROM items WHERE ticket_id = ?", (ticket_id,))
         return {r["gang"] for r in rows}
 
+    def _cutoff_id(self, ticket_id: int) -> int:
+        """Event-ID des letzten 'zurueckgeholt' (0 = nie zurueckgeholt). Events bis
+        einschliesslich dieser ID zaehlen fuer den aktuellen Zustand nicht mehr."""
+        cutoff = 0
+        for ev in self._ticket_events(ticket_id):
+            if ev["typ"] == "zurueckgeholt":
+                cutoff = max(cutoff, ev["id"])
+        return cutoff
+
     def _started_gaenge(self, ticket_id: int) -> dict[str, str]:
-        """gang -> Startzeitstempel (letztes gang_gestartet gewinnt)."""
+        """gang -> Startzeitstempel (letztes gang_gestartet nach Cutoff gewinnt)."""
+        cutoff = self._cutoff_id(ticket_id)
         started: dict[str, str] = {}
         for ev in self._ticket_events(ticket_id):
-            if ev["typ"] == "gang_gestartet" and ev["gang"]:
+            if ev["typ"] == "gang_gestartet" and ev["gang"] and ev["id"] > cutoff:
                 started[ev["gang"]] = ev["zeitstempel"]
         return started
 
-    def _item_ist_fertig(self, item_id: int) -> bool:
-        return self._item_fertig_at(item_id) is not None
+    def _item_ist_fertig(self, item_id: int, cutoff_id: int = 0) -> bool:
+        return self._item_fertig_at(item_id, cutoff_id) is not None
 
-    def _item_fertig_at(self, item_id: int):
-        """Zeitstempel des item_fertig-Events (oder None)."""
+    def _item_fertig_at(self, item_id: int, cutoff_id: int = 0):
+        """Zeitstempel des item_fertig-Events nach dem Cutoff (oder None)."""
         for ev in db.events_for(self.conn, "item", item_id):
-            if ev["typ"] == "item_fertig":
+            if ev["typ"] == "item_fertig" and ev["id"] > cutoff_id:
                 return ev["zeitstempel"]
         return None
 
-    def _alle_items_fertig(self, ticket_id: int) -> bool:
+    def _alle_items_fertig(self, ticket_id: int, cutoff_id: int = 0) -> bool:
         items = db.items_for_ticket(self.conn, ticket_id)
-        return bool(items) and all(self._item_ist_fertig(i["id"]) for i in items)
+        return bool(items) and all(
+            self._item_ist_fertig(i["id"], cutoff_id) for i in items)
 
     def _ticket_view(self, t: sqlite3.Row) -> dict:
         items = db.items_for_ticket(self.conn, t["id"])
         started = self._started_gaenge(t["id"])
+        cutoff = self._cutoff_id(t["id"])
 
         gaenge: dict[str, dict] = {}
         for it in items:
@@ -166,7 +186,7 @@ class KDSService:
                 "gestartet_at": started.get(it["gang"]),
                 "fertig_at": None, "_fertig_ts": [],
             })
-            fts = self._item_fertig_at(it["id"])
+            fts = self._item_fertig_at(it["id"], cutoff)
             fertig = fts is not None
             if fts is not None:
                 g["_fertig_ts"].append(fts)
