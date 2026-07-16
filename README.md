@@ -33,7 +33,9 @@ Kasse/Drucker ──(später)──▶ BonSource ──▶ Parser ──▶ Serv
   Button). Ohne Vorspeise startet der Hauptgang sofort.
 - **Ampel (§6):** eine Uhr pro Gang-Gruppe, erwartete Zeit = `max(prep_seed_min)`.
   neutral → gelb ab 72 % → rot ab 100 %. Schwellen sind **konfigurierbar**
-  (`backend/config.py`), nicht hartcodiert.
+  (`backend/config.py`), nicht hartcodiert. Alternativ **Minuten-Modus**
+  (`KDS_AMPEL_MODUS=minuten` mit `KDS_AMPEL_GELB_MIN`/`KDS_AMPEL_ROT_MIN`) —
+  feste Minuten-Schwellen statt Prozent.
 - **Nie blind (§2):** unbekannte `nr` oder unparsbare Zeilen werden trotzdem als
   Rohtext angezeigt und markiert; ein kaputter Bon stoppt nie den Betrieb.
 - **Ehrliches Logbuch (§1/§4):** jeder Zustand ist aus `events` abgeleitet

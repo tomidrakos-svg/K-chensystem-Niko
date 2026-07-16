@@ -39,6 +39,25 @@ describe('ampelState', () => {
   })
 })
 
+describe('ampelState — Minuten-Modus', () => {
+  const cfgMin = { modus: 'minuten', gelb_min: 8, rot_min: 12 }
+  const g = (extra = {}) => ({
+    gang: 'Hauptgang', status: 'laufend', gestartet_at: START,
+    erwartet_min: 999, items: [], ...extra, // erwartet_min wird im Minuten-Modus ignoriert
+  })
+  it('nutzt absolute Minuten statt Prozent', () => {
+    expect(ampelState(g(), cfgMin, startMs + 5 * 60000).level).toBe('neutral')  // <8
+    expect(ampelState(g(), cfgMin, startMs + 9 * 60000).level).toBe('gelb')     // >=8
+    expect(ampelState(g(), cfgMin, startMs + 13 * 60000).level).toBe('rot')     // >=12
+  })
+  it('friert auch im Minuten-Modus ein', () => {
+    const done = { ...g(), status: 'fertig', fertig_at: '2026-07-16T19:06:00Z' }
+    const r = ampelState(done, cfgMin, Date.parse('2026-07-16T20:00:00Z'))
+    expect(r.level).toBe('fertig')
+    expect(Math.round(r.elapsedSec)).toBe(360)
+  })
+})
+
 describe('schlimmsteAmpel', () => {
   it('nimmt den dringlichsten Gang der Karte', () => {
     const gaenge = [

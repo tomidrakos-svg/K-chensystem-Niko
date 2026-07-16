@@ -131,7 +131,7 @@ Klein, ohne Architektur-Änderung, schärfen Screen 1 Richtung Goldstandard:
 - [x] **Rot-Zustand** als flächigeren Karten-Tint (nicht nur Rand) — umgesetzt
 - [x] **Light-Mode-Variante** als Option (Küchenhelligkeit) — umgesetzt (Toggle)
 - [x] Gerichtnamen-Schriftgröße auf Distanz gegenchecken — vergrößert
-- [ ] Ampel-Schwellen zusätzlich als **absolute Minuten** konfigurierbar machen (offen)
+- [x] Ampel-Schwellen zusätzlich als **absolute Minuten** konfigurierbar machen — umgesetzt (`KDS_AMPEL_MODUS=minuten`, `KDS_AMPEL_GELB_MIN`/`KDS_AMPEL_ROT_MIN`)
 
 > Diese Punkte sind **Verfeinerungen** und ersetzen NICHT das echte
 > `kuechendisplay-mockup.jsx` — sobald das vorliegt, gilt es als verbindlich und

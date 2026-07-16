@@ -12,14 +12,27 @@ export function ampelState(gang, config, nowMs) {
     ? Date.parse(gang.fertig_at)
     : nowMs
   const elapsedSec = Math.max(0, (endMs - startMs) / 1000)
-  const erwartetSec = (gang.erwartet_min || 0) * 60
-  const pct = erwartetSec > 0 ? elapsedSec / erwartetSec : 0
+
+  let pct
+  let level = 'neutral'
+  if (config.modus === 'minuten') {
+    // Feste Minuten-Schwellen, unabhängig vom Gericht.
+    const gelbSec = (config.gelb_min || 0) * 60
+    const rotSec = (config.rot_min || 0) * 60
+    pct = rotSec > 0 ? elapsedSec / rotSec : 0
+    if (elapsedSec >= rotSec) level = 'rot'
+    else if (elapsedSec >= gelbSec) level = 'gelb'
+  } else {
+    // Prozent-Modus: Anteil der erwarteten Gang-Zeit.
+    const erwartetSec = (gang.erwartet_min || 0) * 60
+    pct = erwartetSec > 0 ? elapsedSec / erwartetSec : 0
+    if (pct >= config.rot_pct) level = 'rot'
+    else if (pct >= config.gelb_pct) level = 'gelb'
+  }
+
   if (gang.status === 'fertig') {
     return { level: 'fertig', pct: Math.min(pct, 1), elapsedSec }
   }
-  let level = 'neutral'
-  if (pct >= config.rot_pct) level = 'rot'
-  else if (pct >= config.gelb_pct) level = 'gelb'
   return { level, pct, elapsedSec }
 }
 
