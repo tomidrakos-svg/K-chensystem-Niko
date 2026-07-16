@@ -7,6 +7,8 @@ vollstaendigen Snapshot an alle verbundenen Displays (robust bei <=15 Tickets).
 from __future__ import annotations
 
 import asyncio
+import os
+import re
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -20,6 +22,9 @@ from bonsource import SimulatorSource
 from service import KDSService
 
 FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+EXPORT_DIR = Path(os.environ.get(
+    "KDS_EXPORT_DIR", str(Path(__file__).resolve().parent / "exports")))
+_EXPORT_NAME = re.compile(r"^lernzeiten-\d{4}-\d{2}-\d{2}\.json$")
 
 conn = db.connect()
 service = KDSService(conn)
@@ -121,6 +126,37 @@ async def dev_bon_custom(request: Request) -> JSONResponse:
 @app.get("/health")
 async def health() -> dict:
     return {"ok": True, "aktive_tickets": len(service.snapshot()["tickets"])}
+
+
+# ---------- Anonyme Lern-Exporte (Download über LAN) ----------
+@app.get("/export", response_model=None)
+async def export_index() -> HTMLResponse:
+    files = (sorted((p.name for p in EXPORT_DIR.glob("lernzeiten-*.json")), reverse=True)
+             if EXPORT_DIR.is_dir() else [])
+    rows = "".join(
+        f'<li><a href="/export/download/{n}">{n}</a></li>' for n in files
+    ) or "<li>Noch keine Exporte vorhanden.</li>"
+    return HTMLResponse(f"""<!doctype html><meta charset="utf-8">
+<title>Anonyme Lern-Exporte</title>
+<style>body{{font-family:-apple-system,Segoe UI,Roboto,sans-serif;max-width:640px;
+margin:40px auto;padding:0 16px;color:#1a1f26}}h1{{font-size:22px}}
+a{{color:#0a58ca}}li{{margin:6px 0;font-variant-numeric:tabular-nums}}
+.hinweis{{color:#5c6773;font-size:14px}}</style>
+<h1>Anonyme Lern-Exporte</h1>
+<p class="hinweis">Nur anonyme Zeiten je Gericht — keine personenbezogenen Daten,
+kein Mitarbeiterbezug. Rohdaten werden täglich gelöscht.</p>
+<ul>{rows}</ul>""")
+
+
+@app.get("/export/download/{name}", response_model=None)
+async def export_download(name: str):
+    # Nur erlaubte Dateinamen; schützt vor Path-Traversal.
+    if not _EXPORT_NAME.match(name):
+        return JSONResponse({"error": "ungültiger Name"}, status_code=404)
+    pfad = (EXPORT_DIR / name).resolve()
+    if pfad.parent != EXPORT_DIR.resolve() or not pfad.is_file():
+        return JSONResponse({"error": "nicht gefunden"}, status_code=404)
+    return FileResponse(pfad, media_type="application/json", filename=name)
 
 
 # ---------- Statisches Frontend ----------

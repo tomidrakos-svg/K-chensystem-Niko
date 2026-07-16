@@ -68,9 +68,9 @@ systemctl list-timers kds-taeglich.timer      # nächste Ausführung prüfen
 Manuell auslösen / testen: `cd backend && .venv/bin/python taeglich.py`.
 Die anonymen Exporte landen in `backend/exports/` (bzw. `KDS_EXPORT_DIR`).
 
-> **Offen (Zustellung):** Wie die anonymen Exporte zu dir gelangen (Download über
-> die LAN-Oberfläche / USB / Mail) ist noch zu entscheiden. Bis dahin liegen sie
-> lokal im Export-Ordner und können von dort abgeholt werden.
+**Zustellung = Download über LAN:** Öffne im Browser `http://<pi-ip>:8000/export`
+— dort sind die anonymen Export-Dateien mit Download-Link gelistet. Kein Cloud-
+Zugang, kein aktiver Egress (du holst ab). Die Seite zeigt nur anonyme Daten.
 
 ## 5. Vor Ort zu klären (Handoff §10)
 
