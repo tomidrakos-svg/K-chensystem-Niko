@@ -82,6 +82,21 @@ def test_unbekannte_nr_bleibt_sichtbar(svc):
     assert item["name"] == "Raetselhaftes Gericht"
 
 
+def test_fertiger_gang_hat_abschlusszeit_zum_einfrieren(svc):
+    # Ticket mit Vorspeise (startet sofort) + Hauptgang; nur Vorspeise abhaken.
+    tid = svc.ingest_bon("TISCH 5  19:00\n1x  27  Huehnersuppe\n2x  1  Gyros\n")
+    g = _gaenge(svc.snapshot(), tid)
+    vor_item = g["Vorspeise"]["items"][0]
+    assert g["Vorspeise"]["fertig_at"] is None      # noch laufend
+    svc.item_fertig(vor_item["id"])
+    g = _gaenge(svc.snapshot(), tid)
+    assert g["Vorspeise"]["status"] == "fertig"
+    # Abschlusszeit gesetzt -> das Frontend friert die Uhr darauf ein statt "jetzt".
+    assert g["Vorspeise"]["fertig_at"] is not None
+    # Laufender Hauptgang hat KEINE Abschlusszeit.
+    assert g["Hauptgang"]["fertig_at"] is None
+
+
 def test_snapshot_enthaelt_ampel_config(svc):
     snap = svc.snapshot()
     assert snap["config"]["gelb_pct"] == config.AMPEL_GELB_PCT

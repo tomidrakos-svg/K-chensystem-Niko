@@ -7,7 +7,11 @@ export function ampelState(gang, config, nowMs) {
     return { level: 'geparkt', pct: 0, elapsedSec: 0 }
   }
   const startMs = Date.parse(gang.gestartet_at)
-  const elapsedSec = Math.max(0, (nowMs - startMs) / 1000)
+  // Fertiger Gang: Uhr auf dem Abschlusszeitpunkt einfrieren (nicht weiterlaufen).
+  const endMs = gang.status === 'fertig' && gang.fertig_at
+    ? Date.parse(gang.fertig_at)
+    : nowMs
+  const elapsedSec = Math.max(0, (endMs - startMs) / 1000)
   const erwartetSec = (gang.erwartet_min || 0) * 60
   const pct = erwartetSec > 0 ? elapsedSec / erwartetSec : 0
   if (gang.status === 'fertig') {

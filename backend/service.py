@@ -142,8 +142,14 @@ class KDSService:
         return started
 
     def _item_ist_fertig(self, item_id: int) -> bool:
-        return any(ev["typ"] == "item_fertig"
-                   for ev in db.events_for(self.conn, "item", item_id))
+        return self._item_fertig_at(item_id) is not None
+
+    def _item_fertig_at(self, item_id: int):
+        """Zeitstempel des item_fertig-Events (oder None)."""
+        for ev in db.events_for(self.conn, "item", item_id):
+            if ev["typ"] == "item_fertig":
+                return ev["zeitstempel"]
+        return None
 
     def _alle_items_fertig(self, ticket_id: int) -> bool:
         items = db.items_for_ticket(self.conn, ticket_id)
@@ -158,8 +164,12 @@ class KDSService:
             g = gaenge.setdefault(it["gang"], {
                 "gang": it["gang"], "items": [], "erwartet_min": 0,
                 "gestartet_at": started.get(it["gang"]),
+                "fertig_at": None, "_fertig_ts": [],
             })
-            fertig = self._item_ist_fertig(it["id"])
+            fts = self._item_fertig_at(it["id"])
+            fertig = fts is not None
+            if fts is not None:
+                g["_fertig_ts"].append(fts)
             g["items"].append({
                 "id": it["id"],
                 "nr": it["nr"],
@@ -183,9 +193,12 @@ class KDSService:
                 status = "geparkt"
             elif alle_fertig:
                 status = "fertig"
+                # Abschlusszeit = spaetestes item_fertig der Gruppe (Uhr friert hier ein).
+                g["fertig_at"] = max(g["_fertig_ts"]) if g["_fertig_ts"] else None
             else:
                 status = "laufend"
             g["status"] = status
+            del g["_fertig_ts"]
             gang_list.append(g)
         gang_list.sort(key=lambda g: _GANG_ORDER.get(g["gang"], 99))
 
