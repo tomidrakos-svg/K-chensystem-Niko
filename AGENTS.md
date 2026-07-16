@@ -115,6 +115,14 @@ Alle Daten bleiben auf dem Pi im Restaurant-LAN. **Kein Cloud-Sync, keine Teleme
 kein externer API-Call im Betrieb** ohne 🔴-Freigabe. Ausgehende Verbindungen im
 Produktivcode sind standardmäßig verboten.
 
+> **Genehmigte Ausnahme (Betreiber-Entscheidung):** Ein **täglicher anonymer
+> Lern-Export** darf den Pi verlassen. Es verlassen das Gerät ausschließlich
+> **anonyme** Verbesserungs-Daten (Gericht → gemessene Zeiten; keine Person, kein
+> Tisch, keine Notiz/Allergie, kein Mitarbeiterbezug). Personenbezogene Rohdaten
+> werden täglich gelöscht und **nie** exportiert. Der Zustellweg des Exports ist
+> gesondert festzulegen; solange nur anonyme Daten gehen, bleibt dies datenschutz-
+> rechtlich unkritisch. Umsetzung: `backend/lernexport.py`.
+
 **3.2 Datensparsamkeit — nur der Küchen-Minimalumfang.**
 Verarbeitet werden ausschließlich küchenrelevante Felder: Tisch, Menge,
 Artikelnummer, Name, Uhrzeit, Garstufe, Notiz. **Niemals** Gästenamen, Zahlungs-/
