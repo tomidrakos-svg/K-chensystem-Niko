@@ -21,11 +21,13 @@ pytest -q                                    # Testsuite
 # Frontend (React/Vite)
 cd frontend && npm install && npm run build  # Build -> vom Backend ausgeliefert
 npm run dev                                  # Dev-Server :5173 (proxyt /ws & /dev)
+npm test                                     # Vitest (Ampel-/Komponenten-Logik)
 ```
 
 ## Definition of Done (jede Iteration)
-`pytest` grün · betroffener Ablauf end-to-end beobachtet · kein neues Datenschutz-
-Risiko (AGENTS.md §3) · kleine, reversible, committete Änderung.
+`pytest` grün · bei Frontend-Änderungen `npm test` grün · betroffener Ablauf
+end-to-end beobachtet · kein neues Datenschutz-Risiko (AGENTS.md §3) · kleine,
+reversible, committete Änderung.
 
 ## Wichtig
 - Nur auf dem Arbeitsbranch committen/pushen; **keine PRs ohne Aufforderung**.
