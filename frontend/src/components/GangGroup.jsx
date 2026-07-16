@@ -8,14 +8,19 @@ import GarstufeBadge from './GarstufeBadge.jsx'
 export default function GangGroup({ gang, config, nowMs, onItemFertig, onHauptgangStart, showStart, startLabel }) {
   const { level, pct, elapsedSec } = ampelState(gang, config, nowMs)
   const geparkt = gang.status === 'geparkt'
+  const fertigCount = gang.items.filter((i) => i.fertig).length
 
   return (
     <div className={`gang ${geparkt ? 'gang-geparkt' : ''}`}>
       <div className="gang-kopf">
         <span className="gang-label">{gang.gang}</span>
-        <span className="gang-uhr">
-          {geparkt ? 'wartet' : mmss(elapsedSec)}
-          {!geparkt && <span className="gang-erwartet"> / {gang.erwartet_min}:00</span>}
+        {geparkt && <span className="gang-hold">Wartet</span>}
+        <span className="gang-rechts">
+          <span className="gang-fortschritt">{fertigCount}/{gang.items.length}</span>
+          <span className="gang-uhr">
+            {geparkt ? '– –' : mmss(elapsedSec)}
+            {!geparkt && <span className="gang-erwartet"> / {gang.erwartet_min}:00</span>}
+          </span>
         </span>
       </div>
 
