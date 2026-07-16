@@ -5,10 +5,9 @@ import GarstufeBadge from './GarstufeBadge.jsx'
 
 // Eine Gang-Gruppe mit eigener Uhr, Zeitleiste und Item-Liste. Geparkter
 // Hauptgang zeigt den einzigen farbigen Button "Hauptgang starten" (Handoff §7).
-export default function GangGroup({ gang, config, nowMs, onItemFertig, onHauptgangStart }) {
+export default function GangGroup({ gang, config, nowMs, onItemFertig, onHauptgangStart, showStart, startLabel }) {
   const { level, pct, elapsedSec } = ampelState(gang, config, nowMs)
   const geparkt = gang.status === 'geparkt'
-  const zeigeStartButton = geparkt && gang.gang === 'Hauptgang'
 
   return (
     <div className={`gang ${geparkt ? 'gang-geparkt' : ''}`}>
@@ -43,9 +42,9 @@ export default function GangGroup({ gang, config, nowMs, onItemFertig, onHauptga
         ))}
       </ul>
 
-      {zeigeStartButton && (
+      {showStart && (
         <button className="btn-hauptgang" onClick={() => onHauptgangStart()}>
-          Hauptgang starten
+          {startLabel}
         </button>
       )}
     </div>

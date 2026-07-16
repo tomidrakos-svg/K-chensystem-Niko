@@ -97,6 +97,17 @@ def test_fertiger_gang_hat_abschlusszeit_zum_einfrieren(svc):
     assert g["Hauptgang"]["fertig_at"] is None
 
 
+def test_dessert_ohne_hauptgang_ist_startbar(svc):
+    # Vorspeise + Dessert, KEIN Hauptgang: Dessert parkt und muss startbar bleiben.
+    tid = svc.ingest_bon("TISCH 30  19:00\n1x  27  Huehnersuppe\n1x  150  Coupe Danmark\n")
+    g = _gaenge(svc.snapshot(), tid)
+    assert g["Vorspeise"]["status"] == "laufend"
+    assert g["Dessert"]["status"] == "geparkt"
+    svc.hauptgang_start(tid)          # dieselbe Start-Aktion startet das Dessert
+    g = _gaenge(svc.snapshot(), tid)
+    assert g["Dessert"]["status"] == "laufend"
+
+
 def test_snapshot_enthaelt_ampel_config(svc):
     snap = svc.snapshot()
     assert snap["config"]["gelb_pct"] == config.AMPEL_GELB_PCT

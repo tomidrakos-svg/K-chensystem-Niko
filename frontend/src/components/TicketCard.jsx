@@ -7,6 +7,12 @@ import GangGroup from './GangGroup.jsx'
 export default function TicketCard({ ticket, config, nowMs, onItemFertig, onHauptgangStart }) {
   const rand = schlimmsteAmpel(ticket.gaenge, config, nowMs)
   const alter = alterMin(ticket.created_at, nowMs)
+  // Start-Button am ersten geparkten Nicht-Vorspeise-Gang (meist Hauptgang;
+  // fällt es weg, kann auch ein geparktes Dessert gestartet werden — sonst bliebe
+  // es unstartbar). Die Aktion startet alle geparkten Nicht-Vorspeise-Gänge.
+  const startAnker = ticket.gaenge.find(
+    (g) => g.status === 'geparkt' && g.gang !== 'Vorspeise'
+  )
 
   return (
     <div className={`karte karte-${rand}`}>
@@ -25,6 +31,8 @@ export default function TicketCard({ ticket, config, nowMs, onItemFertig, onHaup
           nowMs={nowMs}
           onItemFertig={onItemFertig}
           onHauptgangStart={() => onHauptgangStart(ticket.id)}
+          showStart={startAnker && g.gang === startAnker.gang}
+          startLabel={startAnker && startAnker.gang === 'Hauptgang' ? 'Hauptgang starten' : 'Dessert starten'}
         />
       ))}
     </div>
