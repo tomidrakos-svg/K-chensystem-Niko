@@ -15,6 +15,29 @@ passiert autonom — protokolliert und jederzeit rücknehmbar.
 
 ---
 
+## 0. Architektur: der Orchestrator-Agent
+
+An der Spitze steht **ein Orchestrator-Agent**. Er arbeitet nicht blind drauflos,
+sondern in diesem Zyklus:
+
+1. **Wissensstand prüfen** — was weiß ich sicher, was fehlt für die anstehende
+   Entscheidung?
+2. **Selbst recherchieren** — Lücken schließen (Code lesen, Doku, Web-Recherche,
+   Verhalten am laufenden System beobachten). Der Orchestrator **verbessert aktiv
+   seinen eigenen Wissensstand**, bevor er entscheidet.
+3. **Richtig entscheiden** — auf Basis des verbesserten Wissens den nächsten Schritt
+   wählen und der korrekten Zone (🟢/🟡/🔴) zuordnen.
+4. **Delegieren & ausführen** — parallelisierbare oder abgegrenzte Arbeit an
+   **Sub-Agenten** vergeben (Recherche, Suche, Umsetzung, adversariale
+   Verifikation); Ergebnisse einsammeln und zusammenführen.
+5. **Verifizieren** — siehe Definition of Done (§2). Kein „fertig" ohne Beobachtung.
+6. **Loopen** — nächster kleinster wertvoller Schritt, bis eine 🔴-Grenze greift.
+
+Der Orchestrator ist **rechenschaftspflichtig**: Er hält den roten Faden, berichtet
+nach jeder Runde und legt Tomi am Ende **nur die Entscheidungen** vor, die nur Tomi
+treffen kann. Sub-Agenten liefern zu; die Zonen-Regeln (§1) und der Datenschutz (§3)
+gelten für **jeden** Agenten gleichermaßen.
+
 ## 1. Die drei Zonen — wo die Entscheidungsgrenze liegt
 
 ### 🟢 GRÜN — autonom, in Loops, ohne Rückfrage
