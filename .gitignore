@@ -1,0 +1,14 @@
+# Python
+backend/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+backend/kds.db
+backend/kds.db-*
+
+# Node / Frontend
+frontend/node_modules/
+frontend/dist/
+
+# OS
+.DS_Store

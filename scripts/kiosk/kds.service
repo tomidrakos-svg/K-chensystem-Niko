@@ -1,0 +1,20 @@
+[Unit]
+Description=Kuechendisplay Haus Beck (KDS Backend)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/K-chensystem-Niko/backend
+# Ampel-Schwellen & Optionen hier zentral setzen (siehe backend/config.py):
+Environment=KDS_AMPEL_GELB_PCT=0.72
+Environment=KDS_AMPEL_ROT_PCT=1.00
+# Optional: automatische Sim-Bons im Testbetrieb (0 = aus):
+Environment=KDS_AUTOSIM_SEK=0
+ExecStart=/home/pi/K-chensystem-Niko/backend/.venv/bin/uvicorn app:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

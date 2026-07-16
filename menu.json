@@ -1,0 +1,1189 @@
+{
+  "restaurant": "Haus Beck",
+  "ort": "Moers",
+  "schema_version": 2,
+  "hinweis": {
+    "join_key": "nr = Artikelnummer auf dem Kassenbon. Der Parser matcht ausschliesslich ueber nr, nie ueber den Namen.",
+    "prep_seed_min": "Startwert fuer die erwartete Zubereitungszeit in Minuten. NUR Anfangswert. Das System misst die echte Zeit pro Gericht (boniert -> fertig getippt) und ueberschreibt diesen Wert lernend, ggf. getrennt nach Tageszeit.",
+    "station": "Primaere/Engpass-Station fuer die Ampel-Logik: kalt | grill | fritteuse | pfanne | ofen",
+    "garstufe": "true = Gast waehlt blutig/medium/durch. Relevant fuer Timing und fuer die Rueckfrage-Anzeige am Display.",
+    "gang": "Abgeleitetes Feld (nicht von der Kasse). Vorspeise = kalte/warme Vorspeisen + Suppen; Dessert = Desserts; Hauptgang = alles andere. Steuert die Gang-Gruppierung und den manuellen 'Hauptgang starten'-Tap."
+  },
+  "stationen": {
+    "kalt": "Salate, kalte Vorspeisen, Desserts, Dips, Beilagen die vorbereitet sind",
+    "grill": "Gyros, Spiesse, Steaks, Lammcarree, Grillplatten",
+    "fritteuse": "Schnitzel, Calamaris, frittierte Vorspeisen, Pommes",
+    "pfanne": "Sahne-/Metaxa-/Sauce-Gerichte, Medaillons, Geschnetzeltes",
+    "ofen": "Auflaeufe, Tontopf, ueberbackene Gerichte"
+  },
+  "gerichte": [
+    {
+      "nr": 1,
+      "name": "Gyros",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 2,
+      "name": "Gyros und Schweinesteak",
+      "kategorie": "mittag",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 3,
+      "name": "Gyros und Leber",
+      "kategorie": "mittag",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 4,
+      "name": "Gyros in Metaxasauce",
+      "kategorie": "mittag",
+      "station": "pfanne",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 5,
+      "name": "Souvflaki",
+      "kategorie": "mittag",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 6,
+      "name": "Leber mit geschmorten Zwiebeln",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 7,
+      "name": "Putenmedaillons Bernaise",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 8,
+      "name": "2 Schweinesteaks in Metaxasauce",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 9,
+      "name": "Lammhaxe (mittag)",
+      "kategorie": "lamm",
+      "station": "ofen",
+      "prep_seed_min": 18,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 10,
+      "name": "Bifteki mit Schafskaesefuellung",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 11,
+      "name": "Dodoni Pfanne",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 12,
+      "name": "Putensteak",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 13,
+      "name": "Schweinelendchen Jaeger Art",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 14,
+      "name": "Jaegerschnitzel",
+      "kategorie": "schnitzel",
+      "station": "fritteuse",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 15,
+      "name": "Zwiebel Roestbratensteak",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 16,
+      "name": "Pfeffersteak",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 17,
+      "name": "Cevapcici",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 18,
+      "name": "Lachs Hollandaise",
+      "kategorie": "fisch",
+      "station": "pfanne",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 19,
+      "name": "Rotbarschfilet",
+      "kategorie": "fisch",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 20,
+      "name": "Greek Street Food",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 21,
+      "name": "Garnelen (Bandnudeln)",
+      "kategorie": "nudeln",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 22,
+      "name": "Putenbrustfilet (Bandnudeln)",
+      "kategorie": "nudeln",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 23,
+      "name": "Griechischer Bauernsalat mit Gyros",
+      "kategorie": "salat",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 24,
+      "name": "Juvetsi (vegetarisch)",
+      "kategorie": "vegetarisch",
+      "station": "ofen",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 25,
+      "name": "Heisses Gemuese",
+      "kategorie": "vegetarisch",
+      "station": "ofen",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 26,
+      "name": "Saganaki mit Honig und Sesam",
+      "kategorie": "vorspeise_warm",
+      "station": "fritteuse",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 27,
+      "name": "Huehnersuppe",
+      "kategorie": "suppe",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 28,
+      "name": "Tomatensuppe",
+      "kategorie": "suppe",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 29,
+      "name": "Zwiebelsuppe",
+      "kategorie": "suppe",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 30,
+      "name": "Peperoni gegrillt",
+      "kategorie": "vorspeise_warm",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 31,
+      "name": "Muscheln Saganaki",
+      "kategorie": "vorspeise_warm",
+      "station": "pfanne",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 32,
+      "name": "Greek Street Food (Grill)",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 33,
+      "name": "Gyros (Grill)",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 34,
+      "name": "Gyros Ueberbacken",
+      "kategorie": "grill",
+      "station": "ofen",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 35,
+      "name": "3 Schweinemedaillons Pfeffer",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 36,
+      "name": "Gyros Metaxa",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 37,
+      "name": "Grillplatte Griechisch",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 38,
+      "name": "Grillplatte Poseidon",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 39,
+      "name": "Grillplatte Kreta",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 40,
+      "name": "Grillplatte Pagaeon",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 41,
+      "name": "Krabben Saganaki",
+      "kategorie": "vorspeise_warm",
+      "station": "pfanne",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 43,
+      "name": "Grillsteak Hawaii",
+      "kategorie": "grill",
+      "station": "ofen",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 44,
+      "name": "Griechischer Bauernspiess",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 46,
+      "name": "Souflaki (Grill)",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 47,
+      "name": "Cevapcici (Grill)",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 48,
+      "name": "Leber Paprika",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 49,
+      "name": "Leber (geschmorte Zwiebeln)",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 50,
+      "name": "Grillteller Balkan",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 51,
+      "name": "Schweinefilet Schafskaese",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 52,
+      "name": "Putensteak (Grill)",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 53,
+      "name": "Bifteki Spezial",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 54,
+      "name": "Putenbrust Schafskaese",
+      "kategorie": "grill",
+      "station": "ofen",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 56,
+      "name": "Dionissos-Teller",
+      "kategorie": "grill",
+      "station": "pfanne",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 57,
+      "name": "3 Schweinemedaillons Hollandaise",
+      "kategorie": "pfanne",
+      "station": "ofen",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 58,
+      "name": "Putengeschnetzeltes Curry-Ananas",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 61,
+      "name": "Putenschnitzel",
+      "kategorie": "schnitzel",
+      "station": "fritteuse",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 62,
+      "name": "Jaegerschnitzel",
+      "kategorie": "schnitzel",
+      "station": "fritteuse",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 63,
+      "name": "Schnitzel Wiener Art",
+      "kategorie": "schnitzel",
+      "station": "fritteuse",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 65,
+      "name": "Souvlakia Bauernspiesse",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 66,
+      "name": "Greek Style Burger",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 67,
+      "name": "Schnitzel Hawaii",
+      "kategorie": "schnitzel",
+      "station": "ofen",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 69,
+      "name": "Schnitzel Metaxa",
+      "kategorie": "schnitzel",
+      "station": "fritteuse",
+      "prep_seed_min": 13,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 70,
+      "name": "Cordon Bleu",
+      "kategorie": "schnitzel",
+      "station": "fritteuse",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 73,
+      "name": "Moussaka",
+      "kategorie": "heimat",
+      "station": "ofen",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 74,
+      "name": "Dodoni-Pfanne",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 76,
+      "name": "3 Rindermedaillons Pfeffer",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 77,
+      "name": "3 Rindermedaillons Tomate",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 78,
+      "name": "Medaillonpfaennchen",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 16,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 79,
+      "name": "Pfaennchen Spezial",
+      "kategorie": "pfanne",
+      "station": "pfanne",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 80,
+      "name": "Bife de Chorizo (Rumpsteak 300g)",
+      "kategorie": "steak",
+      "station": "grill",
+      "prep_seed_min": 20,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 82,
+      "name": "Pfeffersteak (Rumpsteak 300g)",
+      "kategorie": "steak",
+      "station": "grill",
+      "prep_seed_min": 20,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 83,
+      "name": "Roestbratensteak (Rumpsteak 300g)",
+      "kategorie": "steak",
+      "station": "grill",
+      "prep_seed_min": 20,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 84,
+      "name": "Vegetarische Pita",
+      "kategorie": "vegetarisch",
+      "station": "fritteuse",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 85,
+      "name": "Heisses Gemuese (vegetarisch)",
+      "kategorie": "vegetarisch",
+      "station": "ofen",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 86,
+      "name": "Bandnudelgemuese",
+      "kategorie": "vegetarisch",
+      "station": "pfanne",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 87,
+      "name": "Juvetsi (vegetarisch)",
+      "kategorie": "vegetarisch",
+      "station": "ofen",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 88,
+      "name": "Moussaka (vegetarisch)",
+      "kategorie": "vegetarisch",
+      "station": "ofen",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 89,
+      "name": "Rumpsteak (300g)",
+      "kategorie": "steak",
+      "station": "grill",
+      "prep_seed_min": 20,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 92,
+      "name": "Juvetsi Lamm (Tontopf)",
+      "kategorie": "lamm",
+      "station": "ofen",
+      "prep_seed_min": 22,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 93,
+      "name": "Lammcarree",
+      "kategorie": "lamm",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 94,
+      "name": "Lammfilet Provinzial",
+      "kategorie": "lamm",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 95,
+      "name": "Lammfilet Weisswein-Sahne",
+      "kategorie": "lamm",
+      "station": "pfanne",
+      "prep_seed_min": 18,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 96,
+      "name": "Lammhaxe (Tomatensauce)",
+      "kategorie": "lamm",
+      "station": "ofen",
+      "prep_seed_min": 20,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 98,
+      "name": "Lachsfilet",
+      "kategorie": "fisch",
+      "station": "pfanne",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 99,
+      "name": "Rotbarschfilet",
+      "kategorie": "fisch",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 100,
+      "name": "Zanderfilet",
+      "kategorie": "fisch",
+      "station": "pfanne",
+      "prep_seed_min": 15,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 101,
+      "name": "Calamaris",
+      "kategorie": "fisch",
+      "station": "fritteuse",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 102,
+      "name": "Garnelen (Nudeln)",
+      "kategorie": "nudeln",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 103,
+      "name": "Putenbrustfilet (Nudeln)",
+      "kategorie": "nudeln",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 107,
+      "name": "Cevapcici (kleine Portion)",
+      "kategorie": "klein",
+      "station": "grill",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 108,
+      "name": "Souflaki (kleine Portion)",
+      "kategorie": "klein",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 109,
+      "name": "Schweinelendchen Jaeger Art (klein)",
+      "kategorie": "klein",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 110,
+      "name": "Leber mit geschmorten Zwiebeln",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 111,
+      "name": "Gyros",
+      "kategorie": "grill",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 112,
+      "name": "Gyros ueberbacken",
+      "kategorie": "grill",
+      "station": "ofen",
+      "prep_seed_min": 12,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 114,
+      "name": "Rotbarschfilet",
+      "kategorie": "fisch",
+      "station": "pfanne",
+      "prep_seed_min": 14,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 116,
+      "name": "Rumpsteak (200g)",
+      "kategorie": "steak",
+      "station": "grill",
+      "prep_seed_min": 18,
+      "garstufe": true,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 120,
+      "name": "Kindermenue Pegasus (Gyros)",
+      "kategorie": "kinder",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 121,
+      "name": "Kindermenue Nugget",
+      "kategorie": "kinder",
+      "station": "fritteuse",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 122,
+      "name": "Kindermenue Baeren (Schnitzel)",
+      "kategorie": "kinder",
+      "station": "fritteuse",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 123,
+      "name": "Kindermenue Tiger (Cevapcici)",
+      "kategorie": "kinder",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 126,
+      "name": "Griechischer Bauernsalat",
+      "kategorie": "salat",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 127,
+      "name": "Putensalat",
+      "kategorie": "salat",
+      "station": "grill",
+      "prep_seed_min": 10,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 128,
+      "name": "Thunfischsalat Thalassa",
+      "kategorie": "salat",
+      "station": "kalt",
+      "prep_seed_min": 5,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 129,
+      "name": "Lachssalat",
+      "kategorie": "salat",
+      "station": "kalt",
+      "prep_seed_min": 6,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 131,
+      "name": "Saganakisalat",
+      "kategorie": "salat",
+      "station": "fritteuse",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 132,
+      "name": "Bauernsalat mit Gyros",
+      "kategorie": "salat",
+      "station": "grill",
+      "prep_seed_min": 8,
+      "garstufe": false,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 3,
+      "name": "Trilogie 3 Dips",
+      "kategorie": "vorspeise_kalt",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "garstufe": false,
+      "hinweis_nummer_doppelt": "Nr. 3 taucht in der Karte doppelt auf (Mittag + kalte Vorspeise). Beim echten Bon pruefen, welche Nr. die Kasse tatsaechlich sendet.",
+      "gang": "Vorspeise"
+    }
+  ],
+  "vorspeisen_kalt": [
+    {
+      "nr": 5,
+      "name": "Olivenmarmelade",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 6,
+      "name": "Oktopussalat",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 7,
+      "name": "Chtipiti",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 8,
+      "name": "Kalamata Oliven",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 9,
+      "name": "Mese Teller",
+      "station": "kalt",
+      "prep_seed_min": 6,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 10,
+      "name": "Zaziki",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 11,
+      "name": "Feta",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 12,
+      "name": "Tarama",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 13,
+      "name": "Dolmadakia",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Vorspeise"
+    },
+    {
+      "nr": 14,
+      "name": "Mese Teller (klein)",
+      "station": "kalt",
+      "prep_seed_min": 6,
+      "gang": "Vorspeise"
+    }
+  ],
+  "beilagen": [
+    {
+      "nr": 135,
+      "name": "Bratkartoffeln",
+      "station": "pfanne",
+      "prep_seed_min": 6,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 136,
+      "name": "Thymiankartoffeln",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 137,
+      "name": "Sahnekartoffeln",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 138,
+      "name": "Folienkartoffel",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 139,
+      "name": "Pommes frites",
+      "station": "fritteuse",
+      "prep_seed_min": 5,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 140,
+      "name": "Kroketten",
+      "station": "fritteuse",
+      "prep_seed_min": 5,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 141,
+      "name": "Bandnudeln",
+      "station": "kalt",
+      "prep_seed_min": 4,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 142,
+      "name": "Gemuese der Saison",
+      "station": "pfanne",
+      "prep_seed_min": 5,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 147,
+      "name": "Djuwetschreis",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Hauptgang"
+    },
+    {
+      "nr": 148,
+      "name": "Suesskartoffel-Pommes",
+      "station": "fritteuse",
+      "prep_seed_min": 5,
+      "gang": "Hauptgang"
+    }
+  ],
+  "dessert": [
+    {
+      "nr": 149,
+      "name": "Heiss auf Eis",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Dessert"
+    },
+    {
+      "nr": 150,
+      "name": "Coupe Danmark",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Dessert"
+    },
+    {
+      "nr": 151,
+      "name": "Gemischtes Eis",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Dessert"
+    },
+    {
+      "nr": 152,
+      "name": "Schoko Souffle",
+      "station": "ofen",
+      "prep_seed_min": 8,
+      "gang": "Dessert"
+    },
+    {
+      "nr": 153,
+      "name": "Joghurt mit Honig",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Dessert"
+    },
+    {
+      "nr": 154,
+      "name": "Mousse au Chocolat",
+      "station": "kalt",
+      "prep_seed_min": 2,
+      "gang": "Dessert"
+    },
+    {
+      "nr": 155,
+      "name": "Griechischer Orangenkuchen",
+      "station": "kalt",
+      "prep_seed_min": 3,
+      "gang": "Dessert"
+    }
+  ]
+}

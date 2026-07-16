@@ -1,0 +1,243 @@
+/* Küchendisplay Screen 1 — Layout nach Handoff §7.
+   Dunkles, kontraststarkes Schema für gute Lesbarkeit auf Distanz in einer
+   hellen, hektischen Küche. Ampel-Farben: neutral / gelb / rot.
+   Hinweis: Farben/Typo sind gegen das freigegebene Mockup abzugleichen,
+   sobald kuechendisplay-mockup.jsx vorliegt. */
+
+:root {
+  --bg: #12151a;
+  --karte-bg: #1e232c;
+  --karte-bg2: #232936;
+  --text: #f2f5f8;
+  --text-dim: #9aa4b2;
+  --linie: #333b48;
+
+  --neutral: #3a4657;
+  --gelb: #e6b800;
+  --rot: #e23b3b;
+  --fertig: #2f9e5b;
+  --gold: #d4a017;
+
+  --geparkt-dim: 0.5;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow: hidden; /* kein horizontales Scrollen (Handoff §7) */
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* ---------- Kopfzeile ---------- */
+.kopfzeile {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--linie);
+}
+.titel { font-size: 22px; font-weight: 700; letter-spacing: 0.02em; }
+.verbindung { font-size: 13px; }
+.verbindung.ok { color: var(--fertig); }
+.verbindung.weg { color: var(--rot); }
+
+/* ---------- Karten-Raster ---------- */
+.raster {
+  flex: 1 1 auto;
+  overflow-y: auto;               /* Überlauf nach unten ab der 9. Karte */
+  overflow-x: hidden;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+  gap: 12px;
+  padding: 12px;
+  align-content: start;
+}
+.leerhinweis {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--text-dim);
+  padding: 60px 0;
+  font-size: 20px;
+}
+
+/* ---------- Karte ---------- */
+.karte {
+  background: var(--karte-bg);
+  border-radius: 12px;
+  border: 3px solid var(--neutral);
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: karte-rein 0.18s ease-out;
+}
+@keyframes karte-rein {
+  from { opacity: 0; transform: scale(0.97); }
+  to { opacity: 1; transform: scale(1); }
+}
+.karte-neutral { border-color: var(--neutral); }
+.karte-gelb { border-color: var(--gelb); }
+.karte-rot { border-color: var(--rot); box-shadow: 0 0 0 1px var(--rot); }
+.karte-fertig { border-color: var(--fertig); }
+
+.karte-kopf {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.tisch {
+  font-size: 46px;
+  font-weight: 800;
+  line-height: 1;
+}
+.karte-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+.bonzeit { font-variant-numeric: tabular-nums; }
+
+/* ---------- Gang-Gruppe ---------- */
+.gang {
+  background: var(--karte-bg2);
+  border-radius: 8px;
+  padding: 8px 9px;
+}
+.gang-geparkt { opacity: var(--geparkt-dim); }
+.gang-kopf {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 5px;
+}
+.gang-label { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+.gang-uhr { font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.gang-erwartet { color: var(--text-dim); font-weight: 400; font-size: 12px; }
+
+/* ---------- Zeitleiste ---------- */
+.timeline {
+  height: 6px;
+  border-radius: 3px;
+  background: #10141a;
+  overflow: hidden;
+  margin-bottom: 7px;
+}
+.timeline-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.9s linear;
+}
+.timeline-neutral .timeline-fill { background: #4d6b9a; }
+.timeline-gelb .timeline-fill { background: var(--gelb); }
+.timeline-rot .timeline-fill { background: var(--rot); }
+.timeline-fertig .timeline-fill { background: var(--fertig); }
+
+/* ---------- Items ---------- */
+.items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 17px;
+  text-align: left;
+  padding: 5px 4px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.item:active { background: rgba(255, 255, 255, 0.06); }
+.item-menge { font-weight: 800; color: var(--text-dim); min-width: 28px; }
+.item-name { flex: 1; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.item-fertig .item-name { text-decoration: line-through; color: var(--text-dim); }
+.item-gesperrt { cursor: default; }
+
+.garstufe-badge {
+  background: var(--gold);
+  color: #1a1400;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+.badge-unbekannt {
+  background: var(--rot);
+  color: #fff;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.badge-ambig {
+  background: var(--gelb);
+  color: #1a1400;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.item-notiz {
+  color: var(--gelb);
+  font-size: 13px;
+  padding: 0 4px 2px 40px;
+}
+
+/* ---------- Hauptgang-Button (einziger farbiger Button, Handoff §1/§7) ---------- */
+.btn-hauptgang {
+  width: 100%;
+  margin-top: 4px;
+  background: var(--gold);
+  color: #1a1400;
+  font-size: 17px;
+  font-weight: 800;
+  border: none;
+  border-radius: 8px;
+  padding: 11px;
+  cursor: pointer;
+}
+.btn-hauptgang:active { filter: brightness(0.92); }
+
+/* ---------- Zurückholen-Ablage ---------- */
+.recall {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--linie);
+  background: #0e1116;
+  min-height: 48px;
+}
+.recall-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+.recall-liste { display: flex; gap: 8px; flex-wrap: wrap; }
+.recall-leer { color: var(--text-dim); }
+.recall-chip {
+  background: var(--karte-bg2);
+  color: var(--text);
+  border: 1px solid var(--linie);
+  border-radius: 999px;
+  padding: 5px 13px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.recall-chip:active { background: #2c3444; }
