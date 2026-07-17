@@ -80,11 +80,12 @@ def load_menu(path: Optional[str] = None) -> dict[int, list[Dish]]:
 
 
 def _best_by_name(name: str, candidates: list[Dish]) -> Optional[Dish]:
-    names = [c.name for c in candidates]
-    match = difflib.get_close_matches(name, names, n=1, cutoff=0.6)
+    # Case-insensitiv: echte Bons schreiben Namen GROSS, das Menue gemischt.
+    names = [c.name.lower() for c in candidates]
+    match = difflib.get_close_matches(name.lower(), names, n=1, cutoff=0.6)
     if match:
         for c in candidates:
-            if c.name == match[0]:
+            if c.name.lower() == match[0]:
                 return c
     return None
 
@@ -96,15 +97,33 @@ class Resolution:
     unknown: bool          # True = nr nicht im Menue
 
 
+def _dish_by_name_global(name: str, path: Optional[str]) -> Optional[Dish]:
+    """Sucht ueber ALLE Gerichte nach dem besten Namenstreffer (fuer Positionen
+    ohne Nr, z. B. Beilagen wie 'REIS')."""
+    alle: list[Dish] = [d for cands in load_menu(path).values() for d in cands]
+    treffer = difflib.get_close_matches(
+        name.lower(), [d.name.lower() for d in alle], n=1, cutoff=0.7)
+    if treffer:
+        for d in alle:
+            if d.name.lower() == treffer[0]:
+                return d
+    return None
+
+
 def resolve(nr: Optional[int], name: Optional[str] = None,
             path: Optional[str] = None) -> Resolution:
     """Loest eine Artikelnummer gegen das Menue auf.
 
+    - leere nr + Name      -> Namens-Fallback (Beilagen/Extras ohne Nr)
     - unbekannte/leere nr  -> unknown=True, dish=None
     - eindeutige nr        -> dish gesetzt, ambiguous=False
     - Kollision            -> Namens-Gegenprobe; ambiguous=True
     """
     if nr is None:
+        if name:
+            dish = _dish_by_name_global(name, path)
+            if dish is not None:
+                return Resolution(dish=dish, ambiguous=False, unknown=False)
         return Resolution(dish=None, ambiguous=False, unknown=True)
 
     lookup = load_menu(path)

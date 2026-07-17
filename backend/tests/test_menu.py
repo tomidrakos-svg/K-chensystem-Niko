@@ -43,3 +43,11 @@ def test_unbekannte_nummer():
 def test_leere_nummer():
     r = menu.resolve(None)
     assert r.unknown is True
+
+
+def test_namens_fallback_ohne_nr():
+    # Beilage/Extra ohne Nr wird ueber den Namen aufgeloest.
+    r = menu.resolve(None, "Thunfischsalat")
+    assert r.dish is not None and r.dish.nr == 128
+    # Voellig Unbekanntes bleibt unbekannt (nie blind).
+    assert menu.resolve(None, "Xyz Quux Extra").unknown is True

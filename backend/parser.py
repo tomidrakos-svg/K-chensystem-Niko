@@ -1,27 +1,24 @@
-"""Bon-Parser (Handoff §3).
+"""Bon-Parser (Handoff §3) — geeicht am echten Schultes-Küchenbon.
 
-Das exakte Textformat der Kasse ist noch unbekannt (wird per Bon-Foto geeicht,
-Handoff §10). Bis dahin arbeiten wir gegen ein bewusst einfaches, hier
-dokumentiertes Format, das der Simulator erzeugt. Der Parser ist TOLERANT:
-eine unbekannte Artikelnummer oder eine nicht parsbare Zeile stoppt nie den
-Betrieb — sie wird als Rohzeile mitgefuehrt und markiert ("nie blind", §1/§2).
+Format aus echten Bons (Kasse: Schultes S-700 flextouch+, Küchendrucker seriell)::
 
-Erwartetes Format (Platzhalter bis zur Eichung)::
+    #0004
+    17.07.2026            13:25
+    Tisch 41
+    *** VORSPEISE ***                  ← Gang-Marker (optional, wird erkannt/übersprungen)
+    1  4 GYROS ÜBERBACKEN       *13,90  ← <menge>  <nr> <NAME>   *<preis>
+       TORA FERTIG MACHEN               ← Notiz / Sonderwunsch (eigene Zeile)
+    1  10 BIFTEKI              *13,90
+       MEDIUM                           ← Garstufe (eigene Zeile)
+    1  REIS                             ← Beilage/Extra, teils ohne Nr
+    K 4                                 ← Küchen-Station
 
-    TISCH 12        18:42
-    ------------------------
-    2x  1   Gyros
-    1x  76  3 Rindermedaillons Pfeffer
-        >> medium
-    1x  139 Pommes frites
-        >> ohne Zwiebeln
-    ------------------------
-
-- Kopfzeile: ``TISCH <nr>   <HH:MM>``
-- Artikelzeile: ``<menge>x  <nr>  <name>``
-- Folgezeile ``>> ...``: Garstufe (wenn Garwort) sonst Notiz, gehoert zum
-  vorigen Artikel.
-- Trenn-/Leerzeilen werden ignoriert; alles andere wird als Rohzeile behalten.
+Der Parser bleibt TOLERANT (Handoff §1/§2 „nie blind"): unbekannte Nummern und
+nicht zuordenbare Zeilen stoppen nie den Betrieb. Er versteht zusätzlich das alte
+Simulator-Format (`2x  1  Gyros`, `>> medium`), damit nichts regressiert. Preise
+werden ignoriert; Gang-Marker werden erkannt und übersprungen (die Gang-Zuordnung
+kommt weiterhin aus menu.json — bis der rohe serielle Strom die Marker-Semantik
+bestätigt).
 """
 from __future__ import annotations
 
@@ -29,16 +26,27 @@ import re
 from dataclasses import dataclass, field
 from typing import Optional
 
-# Bekannte Garstufen (fuer >> Zeilen). Alles andere unter >> ist eine Notiz.
 GARSTUFEN = {
     "blutig", "rare", "englisch", "medium rare", "medium", "rosa",
     "halbdurch", "durch", "well done", "welldone", "durchgebraten",
 }
 
-_HEADER_RE = re.compile(r"^\s*TISCH\s+(\S+)\s+(\d{1,2}:\d{2})\s*$", re.IGNORECASE)
-_ITEM_RE = re.compile(r"^\s*(\d+)\s*[xX]\s+(\d+)\s+(.+?)\s*$")
+# Kopf / Struktur
+_TISCH_RE = re.compile(r"tisch\s+(\d+)", re.IGNORECASE)
+_TIME_RE = re.compile(r"\b(\d{1,2}:\d{2})\b")
+_HEADER_DT_RE = re.compile(r"^\s*(?:\d{1,2}\.\d{1,2}\.\d{2,4})?\s*(?:\d{1,2}:\d{2})?\s*$")
+_MARKER_RE = re.compile(
+    r"^\s*\*{0,3}\s*(vorspeise[n]?|hauptspeise|hauptgang|hauptgericht|"
+    r"nachspeise|nachtisch|dessert)\s*\*{0,3}\s*$", re.IGNORECASE)
+_FOOTER_RE = re.compile(r"^\s*(#\s*\d+|k\s*\d+|\*{2,})\s*$", re.IGNORECASE)
+_SEPARATOR_RE = re.compile(r"^[\s\-=_]*$")
+_PRICE_ONLY_RE = re.compile(r"^\s*\*?\s*\d[\d.]*,\d{2}\s*$")
+_TRAIL_PRICE_RE = re.compile(r"\s*\*?\s*\d[\d.]*,\d{2}\s*$")
+
+# Positionen
+_ITEM_NR_RE = re.compile(r"^\s*(\d+)\s*[xX]?\s+(\d+)\s+(.+?)\s*$")
+_ITEM_NONR_RE = re.compile(r"^\s*(\d+)\s*[xX]?\s+([^\d\s].*?)\s*$")
 _NOTE_RE = re.compile(r"^\s*>>\s*(.+?)\s*$")
-_SEPARATOR_RE = re.compile(r"^[\s\-=_*]*$")
 
 
 @dataclass
@@ -49,7 +57,7 @@ class ParsedItem:
     garstufe: Optional[str] = None
     notiz: Optional[str] = None
     raw_line: str = ""
-    unparsbar: bool = False   # Zeile passte auf kein Muster
+    unparsbar: bool = False
 
 
 @dataclass
@@ -61,57 +69,66 @@ class ParsedBon:
 
 
 def _classify_note(text: str) -> tuple[Optional[str], Optional[str]]:
-    """Gibt (garstufe, notiz) zurueck — genau eines ist gesetzt."""
-    if text.strip().lower() in GARSTUFEN:
-        return text.strip(), None
-    return None, text.strip()
+    """(garstufe, notiz) — genau eines ist gesetzt. Garstufe normalisiert klein."""
+    t = text.strip()
+    if t.lower() in GARSTUFEN:
+        return t.lower(), None
+    return None, t
+
+
+def _anhaengen(items: list[ParsedItem], garstufe, notiz, roh_line: str) -> None:
+    """Garstufe/Notiz an den letzten Artikel hängen; ohne Vorgänger als Rohzeile."""
+    if not items:
+        items.append(ParsedItem(menge=1, nr=None, name=roh_line.strip(),
+                                raw_line=roh_line, unparsbar=True))
+        return
+    if garstufe:
+        items[-1].garstufe = garstufe
+    if notiz:
+        items[-1].notiz = f"{items[-1].notiz}; {notiz}" if items[-1].notiz else notiz
 
 
 def parse_bon(raw_text: str) -> ParsedBon:
     lines = raw_text.splitlines()
     tisch = "?"
-    uhrzeit: Optional[str] = None
     items: list[ParsedItem] = []
+
+    # Uhrzeit Eingang: einzige HH:MM-Angabe auf dem Bon.
+    zeiten = _TIME_RE.findall(raw_text)
+    uhrzeit = zeiten[-1] if zeiten else None
 
     for line in lines:
         if _SEPARATOR_RE.match(line):
             continue
-
-        header = _HEADER_RE.match(line)
-        if header:
-            tisch = header.group(1)
-            uhrzeit = header.group(2)
+        tisch_m = _TISCH_RE.search(line)
+        if tisch_m:
+            tisch = tisch_m.group(1)
+            continue
+        if _MARKER_RE.match(line) or _FOOTER_RE.match(line) or _PRICE_ONLY_RE.match(line):
+            continue
+        if _HEADER_DT_RE.match(line):   # reine Datum-/Zeit-Kopfzeile
             continue
 
-        note = _NOTE_RE.match(line)
+        note = _NOTE_RE.match(line)     # altes ">> …"-Format
         if note:
-            garstufe, notiz = _classify_note(note.group(1))
-            if items:
-                # An den letzten Artikel anhaengen.
-                if garstufe:
-                    items[-1].garstufe = garstufe
-                if notiz:
-                    items[-1].notiz = (
-                        f"{items[-1].notiz}; {notiz}" if items[-1].notiz else notiz
-                    )
-            else:
-                # >> ohne vorigen Artikel: als eigenstaendige Rohzeile behalten.
-                items.append(ParsedItem(menge=1, nr=None, name=note.group(1),
-                                        raw_line=line, unparsbar=True))
+            g, n = _classify_note(note.group(1))
+            _anhaengen(items, g, n, line)
             continue
 
-        item = _ITEM_RE.match(line)
-        if item:
-            items.append(ParsedItem(
-                menge=int(item.group(1)),
-                nr=int(item.group(2)),
-                name=item.group(3).strip(),
-                raw_line=line,
-            ))
+        line_np = _TRAIL_PRICE_RE.sub("", line)   # Preis am Zeilenende entfernen
+        m = _ITEM_NR_RE.match(line_np)
+        if m:
+            items.append(ParsedItem(menge=int(m.group(1)), nr=int(m.group(2)),
+                                    name=m.group(3).strip(), raw_line=line))
+            continue
+        m2 = _ITEM_NONR_RE.match(line_np)
+        if m2:
+            items.append(ParsedItem(menge=int(m2.group(1)), nr=None,
+                                    name=m2.group(2).strip(), raw_line=line))
             continue
 
-        # Nichts hat gepasst: Zeile nicht verwerfen, sondern roh behalten.
-        items.append(ParsedItem(menge=1, nr=None, name=line.strip(),
-                                raw_line=line, unparsbar=True))
+        # Kein Artikel: Garstufe- oder Notizzeile (gehört zum vorigen Artikel).
+        g, n = _classify_note(line)
+        _anhaengen(items, g, n, line)
 
     return ParsedBon(tisch=tisch, uhrzeit=uhrzeit, roh_text=raw_text, items=items)

@@ -123,6 +123,30 @@ def test_dessert_ohne_hauptgang_ist_startbar(svc):
     assert g["Dessert"]["status"] == "laufend"
 
 
+def test_ingest_echtes_schultes_format(svc):
+    bon = ("#0004\n17.07.2026        12:47\nTisch 37\n"
+           "1  15 ZWIEBEL ROEST        *17,90\n"
+           "1  18 LACHS HOLLANDAISE    *17,90\n"
+           "1  18 LACHS HOLLANDAISE    *17,90\nK 4\n")
+    tid = svc.ingest_bon(bon)
+    t = next(x for x in svc.snapshot()["tickets"] if x["id"] == tid)
+    assert t["tisch"] == "37"
+    assert sum(len(g["items"]) for g in t["gaenge"]) == 3
+    namen = [i["name"] for g in t["gaenge"] for i in g["items"]]
+    assert any("Roestbraten" in n or "Zwiebel" in n for n in namen)  # nr 15 aufgeloest
+
+
+def test_ingest_kollision_zaziki_als_vorspeise(svc):
+    # nr 10 kollidiert (Bifteki/Hauptgang vs. Zaziki/Vorspeise) -> Name entscheidet.
+    bon = ("Tisch 32\n*** VORSPEISE ***\n1  10 ZAZIKI        *5,90\n"
+           "1  38 PLATTE POSEIDON       *21,50\nK 4\n")
+    tid = svc.ingest_bon(bon)
+    g = _gaenge(svc.snapshot(), tid)
+    assert g["Vorspeise"]["items"][0]["name"] == "Zaziki"
+    assert g["Vorspeise"]["status"] == "laufend"     # Vorspeise startet sofort
+    assert "Hauptgang" in g and g["Hauptgang"]["status"] == "geparkt"
+
+
 def test_snapshot_enthaelt_ampel_config(svc):
     snap = svc.snapshot()
     assert snap["config"]["gelb_pct"] == config.AMPEL_GELB_PCT
